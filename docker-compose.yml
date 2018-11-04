@@ -1,0 +1,23 @@
+version: '3.3'
+services:
+    app:
+        build: .
+        tty: true
+        volumes:
+            - .:/app
+        ports:
+            - "53000:8000"
+        command: bash -c "bash ./wait_for_db.sh db:5432 && echo DATABASE_URL=postgres://username:password@db/db > .env && diesel setup && cargo watch -x run"
+        depends_on:
+            - db
+
+    db:
+        image: postgres
+        volumes:
+            - ./db/storage:/var/lib/postgresql/data
+        ports:
+            - "55432:5432"
+        environment:
+            POSTGRES_USER: username
+            POSTGRES_PASSWORD: password
+            POSTGRES_db: db

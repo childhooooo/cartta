@@ -1,0 +1,10 @@
+[package]
+name = "cartta"
+version = "0.1.0"
+authors = ["childhooooo <hikaru@childhooooo.com>"]
+edition = "2018"
+
+[dependencies]
+rocket = "0.4.0-rc.1"
+diesel = { version = "1.0.0", features = ["postgres"] }
+dotenv = "0.9.0"
