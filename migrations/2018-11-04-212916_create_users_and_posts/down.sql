@@ -1,0 +1,1 @@
+DROP TABLE users, credentials, notes, tags, note_tags;

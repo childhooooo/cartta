@@ -1,2 +1,8 @@
 [global]
 address = "0.0.0.0"
+template_dir = "src/web/templates"
+secret_key = "APAhRM86VDPZD7jwog2G1zsoYvmdXXI6FiVqm1oJKII="
+days_cookie = 30
+
+[global.databases.postgres_database]
+url = "postgres://username:password@db/db"

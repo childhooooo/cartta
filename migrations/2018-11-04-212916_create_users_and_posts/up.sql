@@ -1,0 +1,35 @@
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR NOT NULL UNIQUE
+);
+
+CREATE TABLE credentials (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR NOT NULL,
+    password VARCHAR NOT NULL,
+    user_id INTEGER NOT NULL REFERENCES users ON DELETE CASCADE
+);
+
+CREATE TABLE notes (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR NOT NULL,
+    content VARCHAR NOT NULL,
+    access INTEGER NOT NULL CHECK(-1 < access AND access < 3) DEFAULT 0,
+    created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    user_id INTEGER REFERENCES users ON DELETE SET NULL
+);
+
+SELECT diesel_manage_updated_at('notes');
+
+CREATE TABLE tags (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR NOT NULL UNIQUE,
+    user_id INTEGER REFERENCES users ON DELETE SET NULL
+);
+
+CREATE TABLE note_tags (
+    id SERIAL PRIMARY KEY,
+    note_id INTEGER NOT NULL REFERENCES notes ON DELETE CASCADE,
+    tag_id INTEGER NOT NULL REFERENCES tags ON DELETE CASCADE
+);
