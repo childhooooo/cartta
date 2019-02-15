@@ -60,6 +60,20 @@ pub fn get_user(
     user.ok_or(AccountError::NotFound)
 }
 
+pub fn search_user_by_name(
+    name: String,
+    conn: &PgConnection
+) -> Result<User, AccountError> {
+    let user =
+        users::table
+        .filter(users::name.eq(&name))
+        .first::<User>(conn)
+        .optional()
+        .map_err(AccountError::DatabaseError)?;
+
+    user.ok_or(AccountError::NotFound)
+}
+
 pub fn list_users (
     conn: &PgConnection
 ) -> Result<Vec<User>, AccountError> {

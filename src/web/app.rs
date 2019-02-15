@@ -33,7 +33,7 @@ pub fn rocket() -> (rocket::Rocket, Option<DbConn>) {
         .mount("/", routes![app_controller::index, app_controller::index_by, app_controller::editor, app_controller::editor_by])
         .mount("/user", routes![user_controller::create, user_controller::get, user_controller::delete])
         .mount("/session", routes![session_controller::create, session_controller::update, session_controller::delete, session_controller::nosession])
-        .mount("/note", routes![note_controller::index, note_controller::search, note_controller::create, note_controller::create_by, note_controller::get, note_controller::update, note_controller::update_by, note_controller::chmod, note_controller::chmod_by])
+        .mount("/note", routes![note_controller::index, note_controller::index_by, note_controller::book, note_controller::create, note_controller::create_by, note_controller::get, note_controller::get_by, note_controller::update, note_controller::update_by, note_controller::chmod, note_controller::chmod_by])
         .mount("/tag", routes![tag_controller::index, tag_controller::index_by, tag_controller::create, tag_controller::create_by])
         .attach(Template::fairing());
 

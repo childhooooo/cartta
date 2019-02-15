@@ -179,10 +179,23 @@ fn test_cms_by() {
         note = serde_json::from_str(&body).unwrap();
         assert_eq!(&note["access"], 2);
 
+        let username = user["name"].as_str().unwrap();
         // ノート一覧
         res =
             client
-            .get(format!("/note/user/{}?page=1&per_page=30", &user["id"]))
+            .get(format!("/note/book/{}?page=1&per_page=30", username))
+            .cookie(login_cookie.clone())
+            .dispatch();
+        assert_eq!(res.status(), Status::Ok);
+        body = res.body().unwrap().into_string().unwrap();
+        let notes: Value = serde_json::from_str(&body).unwrap();
+        assert_eq!(&notes[0]["listnote"]["title"], "edited");
+        assert_eq!(&notes[0]["listnote"]["access"], 2);
+
+        // ノート一覧
+        res =
+            client
+            .get(format!("/note?page=1&per_page=30"))
             .cookie(login_cookie.clone())
             .dispatch();
         assert_eq!(res.status(), Status::Ok);
@@ -194,7 +207,7 @@ fn test_cms_by() {
         // 文字列で検索
         res =
             client
-            .get(format!("/note/user/{}/search?query=edi&page=1&per_page=30", &user["id"]))
+            .get(format!("/note/book/{}?query=edi&page=1&per_page=30", username))
             .cookie(login_cookie.clone())
             .dispatch();
         assert_eq!(res.status(), Status::Ok);
@@ -205,7 +218,7 @@ fn test_cms_by() {
         // タグで検索
         res =
             client
-            .get(format!("/note/user/{}/search?tag={},{}&page=1&per_page=30", &user["id"], &tag1["id"], &tag2["id"]))
+            .get(format!("/note/book/{}?tag={},{}&page=1&per_page=30", username, &tag1["id"], &tag2["id"]))
             .cookie(login_cookie.clone())
             .dispatch();
         assert_eq!(res.status(), Status::Ok);
@@ -216,7 +229,7 @@ fn test_cms_by() {
         // 両方で検索
         res =
             client
-            .get(format!("/note/user/{}/search?query=edit&tag={},{}&page=1&per_page=30", &user["id"], &tag1["id"], &tag2["id"]))
+            .get(format!("/note/book/{}?query=edit&tag={},{}&page=1&per_page=30", username, &tag1["id"], &tag2["id"]))
             .cookie(login_cookie.clone())
             .dispatch();
         assert_eq!(res.status(), Status::Ok);

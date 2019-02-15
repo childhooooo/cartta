@@ -94,16 +94,51 @@ pub fn list_notes (
     .map_err(CMSError::DatabaseError)
 }
 
+pub fn list_some_notes (
+    user_id: &i32,
+    query: Option<String>,
+    tag: Option<String>,
+    page: Option<i64>,
+    per_page: Option<i64>,
+    public: bool,
+    conn: &PgConnection
+) -> Result<Vec<ListNote>, CMSError> {
+    let page = match page {
+        Some(page) => page,
+        None => 1
+    };
+    let per_page = match per_page {
+        Some(per_page) => per_page,
+        None => 30
+    };
+    if let Some(tag) = tag {
+        let tag_ids: Vec<i32> = tag.split(',').map(|t| t.parse().unwrap()).collect();
+        if let Some(query) = query {
+            search_owned_notes_by_all(user_id, query, tag_ids, page, per_page, public, conn)
+        } else {
+            search_owned_notes_by_tag(user_id, tag_ids, page, per_page, public, conn)
+        }
+    } else {
+        if let Some(query) = query {
+            search_owned_notes_by_query(user_id, query, page, per_page, public, conn)
+        } else {
+            list_owned_notes(user_id, page, per_page, public, conn)
+        }
+    }
+}
+
 pub fn list_owned_notes (
     user_id: &i32,
     page: i64,
     per_page: i64,
+    public: bool,
     conn: &PgConnection
 ) -> Result<Vec<ListNote>, CMSError> {
+    let mut query = notes::table.order(notes::updated_at.desc()).into_boxed();
+    if(public) { query = query.filter(notes::access.eq(Access::Public as i32)); }
     let (list, _total) =
-        notes::table
+        query
         .filter(notes::user_id.eq(user_id))
-        .order(notes::updated_at.desc())
         .select((
             notes::id,
             notes::title,
@@ -122,15 +157,17 @@ pub fn search_owned_notes_by_query (
     query: String,
     page: i64,
     per_page: i64,
+    public: bool,
     conn: &PgConnection
 ) -> Result<Vec<ListNote>, CMSError> {
     let pattern = format!("%{}%", query);
+    let mut query = notes::table.order(notes::updated_at.desc()).into_boxed();
+    if(public) { query = query.filter(notes::access.eq(Access::Public as i32)); }
     let (list, _total) =
-        notes::table
+        query
         .filter(notes::user_id.eq(user_id))
         .or_filter(notes::title.ilike(&pattern))
         .or_filter(notes::content.ilike(&pattern))
-        .order(notes::updated_at.desc())
         .select((
             notes::id,
             notes::title,
@@ -149,13 +186,14 @@ pub fn search_owned_notes_by_tag (
     tag_ids: Vec<i32>,
     page: i64,
     per_page: i64,
+    public: bool,
     conn: &PgConnection
 ) -> Result<Vec<ListNote>, CMSError> {
+    let mut query = note_tags::table.inner_join(notes::table.on(notes::id.eq(note_tags::note_id))).order((notes::id.desc(), notes::updated_at.desc())).distinct_on(notes::id).into_boxed();
+    if(public) { query = query.filter(notes::access.eq(Access::Public as i32)); }
     let list =
-        note_tags::table
-        .inner_join(notes::table.on(notes::id.eq(note_tags::note_id)))
+        query
         .filter(note_tags::tag_id.eq_any(tag_ids))
-        .order((notes::id.desc(), notes::updated_at.desc()))
         .select((
             note_tags::all_columns,
             (
@@ -165,7 +203,6 @@ pub fn search_owned_notes_by_tag (
                 notes::updated_at
             )
         ))
-        .distinct_on(notes::id)
         .paginate(page)
         .per_page(per_page)
         .load_and_count_pages::<(NoteTag, ListNote)>(conn)
@@ -183,16 +220,17 @@ pub fn search_owned_notes_by_all (
     tag_ids: Vec<i32>,
     page: i64,
     per_page: i64,
+    public: bool,
     conn: &PgConnection
 ) -> Result<Vec<ListNote>, CMSError> {
     let pattern = format!("%{}%", query);
+    let mut query = note_tags::table.inner_join(notes::table.on(notes::id.eq(note_tags::note_id))).order((notes::id.desc(), notes::updated_at.desc())).distinct_on(notes::id).into_boxed();
+    if(public) { query = query.filter(notes::access.eq(Access::Public as i32)); }
     let list =
-        note_tags::table
-        .inner_join(notes::table.on(notes::id.eq(note_tags::note_id)))
+        query
         .filter(note_tags::tag_id.eq_any(tag_ids))
         .or_filter(notes::title.ilike(&pattern))
         .or_filter(notes::content.ilike(&pattern))
-        .order((notes::id.desc(), notes::updated_at.desc()))
         .select((
             note_tags::all_columns,
             (
@@ -202,7 +240,6 @@ pub fn search_owned_notes_by_all (
                 notes::updated_at
             )
         ))
-        .distinct_on(notes::id)
         .paginate(page)
         .per_page(per_page)
         .load_and_count_pages::<(NoteTag, ListNote)>(conn)
@@ -412,42 +449,6 @@ impl GroupTag<Note> for Vec<(NoteTag, Tag)> {
     }
 }
 
-/*
-impl GroupTag<ListNote> for Vec<(NoteTag, Tag)> {
-    fn group_tag (self, parents: &Vec<ListNote>) -> Vec<Vec<Tag>> {
-        use std::collections::HashMap;
-
-        let id_indices: HashMap<_, _> = parents
-            .iter()
-            .enumerate()
-            .map(|(i, n)| (n.id(), i))
-            .collect();
-        let mut result = parents.iter().map(|_| Vec::new()).collect::<Vec<_>>();
-        for (notetag, tag) in self {
-            result[id_indices[&notetag.note_id]].push(tag);
-        }
-        result
-    }
-}
-*/
-
-/*
-pub fn group_tag(children: Vec<(NoteTag, Tag)>, parents: &Vec<Note>) -> Vec<Vec<Tag>> {
-    use std::collections::HashMap;
-
-    let id_indices: HashMap<_, _> = parents
-        .iter()
-        .enumerate()
-        .map(|(i, u)| (u.id(), i))
-        .collect();
-    let mut result = parents.iter().map(|_| Vec::new()).collect::<Vec<_>>();
-    for (notetag, tag) in children {
-        result[id_indices[&notetag.note_id]].push(tag);
-    }
-    result
-}
-*/
-
 pub trait WithTag<T> {
     fn with_tag (self, conn: &PgConnection) -> Result<T, CMSError>;
 }
@@ -478,17 +479,6 @@ impl WithTag<Vec<ListNoteWithTag>> for Result<Vec<ListNote>, CMSError> {
             .collect();
 
         Ok(listnotes_with_tag)
-
-
-        /*
-        Ok(
-            group_tag(tags_with_note_id, &listnotes)
-            .into_iter()
-            .enumerate()
-            .map(|(i, t)| NoteWithTag { listnote: listnotes[i].clone(), tags: t })
-            .collect()
-        )
-        */
     }
 }
 
@@ -505,7 +495,7 @@ impl WithTag<NoteWithTag> for Result<Note, CMSError> {
             .load::<(NoteTag, Tag)>(conn)
             .map_err(CMSError::DatabaseError)?
             .into_iter()
-            .map(|(nt, t)| t)
+            .map(|(_nt, t)| t)
             .collect();
 
         Ok(NoteWithTag { note: note, tags: list_tags })

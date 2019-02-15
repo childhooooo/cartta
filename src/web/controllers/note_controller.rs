@@ -1,79 +1,28 @@
 use rocket_contrib::json::{Json, JsonValue};
 use rocket::http::Status;
+use crate::contexts::accounts::*;
 use crate::contexts::accounts::user::User;
 use crate::contexts::cms::*;
 use crate::contexts::cms::note::*;
 use crate::web::app::DbConn;
 
-#[get("/user/<id>?<page>&<per_page>")]
-pub fn index(id: i32, page: Option<i64>, per_page: Option<i64>, conn: DbConn) -> Result<Json<Vec<ListNoteWithTag>>, Status> {
-    let page = match page {
-        Some(page) => page,
-        None => 1
-    };
-    let per_page = match per_page {
-        Some(per_page) => per_page,
-        None => 30
-    };
-    let notes = list_owned_notes(&id, page, per_page, &conn).with_tag(&conn)?;
+#[get("/?<query>&<tag>&<page>&<per_page>")]
+pub fn index_by(user: User, query: Option<String>, tag: Option<String>, page: Option<i64>, per_page: Option<i64>, conn: DbConn) -> Result<Json<Vec<ListNoteWithTag>>, Status> {
+    let notes = list_some_notes(&user.id, query, tag, page, per_page, false, &conn).with_tag(&conn)?;
     Ok(Json(notes))
 }
 
-/*
-#[get("/user/<id>", rank = 2)]
-pub fn index(id: i32, conn: DbConn) -> Result<Json<Vec<ListNoteWithTag>>, Status> {
-    let notes = list_owned_notes(&id, 1, 30, &conn).with_tag(&conn)?;
-    Ok(Json(notes))
-}
-*/
-
-#[get("/user/<id>/search?<query>&<tag>&<page>&<per_page>")] //Optionにできない？
-pub fn search(id: i32, query: Option<String>, tag: Option<String>, page: Option<i64>, per_page: Option<i64>, conn: DbConn) -> Result<Json<Vec<ListNoteWithTag>>, Status> {
-    let page = match page {
-        Some(page) => page,
-        None => 1
-    };
-    let per_page = match per_page {
-        Some(per_page) => per_page,
-        None => 30
-    };
-    let notes =
-        if let Some(tag) = tag {
-            let tag_ids: Vec<i32> = tag.split(',').map(|t| t.parse().unwrap()).collect();
-            if let Some(query) = query {
-                search_owned_notes_by_all(&id, query, tag_ids, page, per_page, &conn).with_tag(&conn)?
-            } else {
-                search_owned_notes_by_tag(&id, tag_ids, page, per_page, &conn).with_tag(&conn)?
-            }
-        } else {
-            if let Some(query) = query {
-                search_owned_notes_by_query(&id, query, page, per_page, &conn).with_tag(&conn)?
-            } else {
-                list_owned_notes(&id, page, per_page, &conn).with_tag(&conn)?
-            }
-        };
-    /*
-    let notes =
-        if(query.is_none() && tags.is_empty()) {
-            list_owned_notes(id, page, per_page, conn)?;
-        } else if(query.is_none()) {
-            search_owned_notes_by_tag(id, tag_ids, page, per_page, conn)?;
-        } else if(tags.is_empty()) {
-            search_owned_notes_by_query(id, query.unwrap(), page, per_page, conn)?;
-        } else {
-            search_owned_notes_by_all(id, query.unwrap(), tag_ids, page, per_page, conn)?;
-        }
-    */
-    Ok(Json(notes))
+#[get("/", rank = 2)]
+pub fn index() -> Status {
+    Status::Unauthorized
 }
 
-/*
-#[get("/user/<id>/search?<query>&<tags>")]
-pub fn search(id: i32, query: String, tag_ids: Vec<i32>, page: i64, per_page: i64, conn: DbConn) -> Result<Json<Vec<ListNoteWithTag>>, Status> {
-    let notes = search_owned_notes(&id, 1, 30, &conn).with_tag(&conn)?;
+#[get("/book/<name>?<query>&<tag>&<page>&<per_page>")]
+pub fn book(name: String, query: Option<String>, tag: Option<String>, page: Option<i64>, per_page: Option<i64>, conn: DbConn) -> Result<Json<Vec<ListNoteWithTag>>, Status> {
+    let user = search_user_by_name(name, &conn)?;
+    let notes = list_some_notes(&user.id, query, tag, page, per_page, true, &conn).with_tag(&conn)?;
     Ok(Json(notes))
 }
-*/
 
 #[post("/", format = "json", data = "<newnote_json>")]
 pub fn create_by(newnote_json: Json<NewNote>, user: User, conn: DbConn) -> Result<Json<Note>, Status> {
@@ -88,9 +37,14 @@ pub fn create() -> Status {
 }
 
 #[get("/<id>")]
-pub fn get(id: i32, conn: DbConn) -> Result<Json<NoteWithTag>, Status> {
+pub fn get_by(user: User, id: i32, conn: DbConn) -> Result<Json<NoteWithTag>, Status> {
     let note = get_note(&id, &conn).with_tag(&conn)?;
     Ok(Json(note))
+}
+
+#[get("/<id>", rank = 2)]
+pub fn get(id: i32, conn: DbConn) -> Status {
+    Status::Unauthorized
 }
 
 #[put("/<id>", format = "json", data = "<newnote_json>")]

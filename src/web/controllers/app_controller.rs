@@ -14,9 +14,13 @@ pub fn index_by(user: User) -> Redirect {
 #[get("/", rank = 2)]
 pub fn index(flash: Option<FlashMessage>) -> Template {
     let mut context = HashMap::new();
-    if let Some(ref msg) = flash {
-        context.insert("message", msg.msg());
-    }
+    let message =
+        if let Some(ref msg) = flash {
+            msg.msg()
+        } else {
+            "Helle, world!!"
+        };
+    context.insert("message", message);
     Template::render("index", &context)
 }
 
