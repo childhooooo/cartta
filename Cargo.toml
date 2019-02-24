@@ -12,6 +12,7 @@ serde = "1.0"
 serde_json = "1.0"
 serde_derive = "1.0"
 log = "0.4"
+regex = "0.1"
 bcrypt = "0.2"
 parking_lot = { version = "0.6", features = ["nightly"] }
 chrono = { version = "0.4", features = ["serde"] }
@@ -19,8 +20,13 @@ validator = "0.8.0"
 validator_derive = "0.8.0"
 time = "0.1"
 ammonia = "1.2"
+pulldown-cmark = { version = "0.0.11", default-features = false }
+xss = { git = "https://github.com/childhooooo/xss.rs.git" }
+tera = "0.11"
+htmlescape = "0.3.1"
+lazy_static = "1.2.0"
 
 [dependencies.rocket_contrib]
 version = "0.4.0-rc.1"
 default_features = false
-features = ["tera_templates", "diesel_postgres_pool", "json"]
+features = ["tera_templates", "diesel_postgres_pool", "json", "serve"]

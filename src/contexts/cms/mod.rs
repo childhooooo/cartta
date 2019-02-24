@@ -161,13 +161,16 @@ pub fn search_owned_notes_by_query (
     conn: &PgConnection
 ) -> Result<Vec<ListNote>, CMSError> {
     let pattern = format!("%{}%", query);
-    let mut query = notes::table.order(notes::updated_at.desc()).into_boxed();
+    let mut query =
+        notes::table
+        .order(notes::updated_at.desc())
+        .into_boxed()
+        .filter(notes::title.ilike(&pattern))
+        .or_filter(notes::content.ilike(&pattern))
+        .filter(notes::user_id.eq(user_id));
     if(public) { query = query.filter(notes::access.eq(Access::Public as i32)); }
     let (list, _total) =
         query
-        .filter(notes::user_id.eq(user_id))
-        .or_filter(notes::title.ilike(&pattern))
-        .or_filter(notes::content.ilike(&pattern))
         .select((
             notes::id,
             notes::title,
@@ -189,11 +192,16 @@ pub fn search_owned_notes_by_tag (
     public: bool,
     conn: &PgConnection
 ) -> Result<Vec<ListNote>, CMSError> {
-    let mut query = note_tags::table.inner_join(notes::table.on(notes::id.eq(note_tags::note_id))).order((notes::id.desc(), notes::updated_at.desc())).distinct_on(notes::id).into_boxed();
+    let mut query =
+        note_tags::table
+        .inner_join(notes::table.on(notes::id.eq(note_tags::note_id)))
+        .order((notes::id.desc(), notes::updated_at.desc()))
+        .distinct_on(notes::id)
+        .into_boxed()
+        .filter(note_tags::tag_id.eq_any(tag_ids));
     if(public) { query = query.filter(notes::access.eq(Access::Public as i32)); }
     let list =
         query
-        .filter(note_tags::tag_id.eq_any(tag_ids))
         .select((
             note_tags::all_columns,
             (
@@ -224,13 +232,19 @@ pub fn search_owned_notes_by_all (
     conn: &PgConnection
 ) -> Result<Vec<ListNote>, CMSError> {
     let pattern = format!("%{}%", query);
-    let mut query = note_tags::table.inner_join(notes::table.on(notes::id.eq(note_tags::note_id))).order((notes::id.desc(), notes::updated_at.desc())).distinct_on(notes::id).into_boxed();
-    if(public) { query = query.filter(notes::access.eq(Access::Public as i32)); }
-    let list =
-        query
+    let mut query =
+        note_tags::table
+        .inner_join(notes::table.on(notes::id.eq(note_tags::note_id)))
+        .order((notes::id.desc(), notes::updated_at.desc()))
+        .distinct_on(notes::id)
+        .into_boxed()
         .filter(note_tags::tag_id.eq_any(tag_ids))
         .or_filter(notes::title.ilike(&pattern))
         .or_filter(notes::content.ilike(&pattern))
+        .filter(notes::user_id.eq(user_id));
+    if(public) { query = query.filter(notes::access.eq(Access::Public as i32)); }
+    let list =
+        query
         .select((
             note_tags::all_columns,
             (

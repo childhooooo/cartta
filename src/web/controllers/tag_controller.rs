@@ -38,3 +38,32 @@ pub fn get_by(id: i32, user: User, conn: DbConn) -> Result<Json<Tag>, Status> {
 pub fn get(id: i32) -> Status {
     Status::Unauthorized
 }
+
+#[get("/user/<id>")]
+pub fn index_user(id: i32, conn: DbConn) -> Result<Json<Vec<Tag>>, Status> {
+    let tags = list_owned_tags(&id, &conn)?;
+    Ok(Json(tags))
+}
+
+#[delete("/<id>")]
+pub fn delete_by(id: i32, user: User, conn: DbConn) -> Status {
+    match delete_tag(id, &conn) {
+        Ok(_) => Status::Ok,
+        Err(err) => Status::from(err)
+    }
+}
+
+#[delete("/<id>", rank = 2)]
+pub fn delete(id: i32) -> Status {
+    Status::Unauthorized
+}
+
+#[options("/")]
+pub fn preflight() -> Status {
+    Status::Ok
+}
+
+#[options("/<id>")]
+pub fn preflight_id(id: i32) -> Status {
+    Status::Ok
+}

@@ -5,24 +5,23 @@ use rocket::http::{Cookie, Cookies, SameSite, Status};
 
 use crate::web::app::DbConn;
 use crate::web::app::Settings;
-use crate::contexts::accounts::{*, user::User};
+use crate::contexts::accounts::{*, user::*};
 
 const ADAY: i64 = 86400;
 
 #[post("/", format = "json", data = "<account_json>")]
-pub fn create(mut cookies: Cookies, account_json: Json<Account>, conn: DbConn, settings: State<Settings>) -> Result<Redirect, Flash<Redirect>> {
+pub fn create(mut cookies: Cookies, account_json: Json<Account>, conn: DbConn, settings: State<Settings>) -> Result<Json<User>, Status> {
     let account = account_json.into_inner();
     match authenticate(&account, &conn) {
         Ok(user) => {
             put_session(&user, &settings.days_cookie, &mut cookies);
-            Ok(Redirect::to("/editor"))
+            Ok(Json(user))
         },
-        Err(err) => {
-            Err(Flash::error(Redirect::to("/"), format!("{}", err)))
-        }
+        Err(err) => Err(Status::from(err))
     }
 }
 
+/*
 #[put("/", format = "json", data = "<account_json>")]
 pub fn update(mut cookies: Cookies, account_json: Json<Account>, conn: DbConn, settings: State<Settings>) -> Result<Json<User>, Status> {
     let account = account_json.into_inner();
@@ -30,11 +29,12 @@ pub fn update(mut cookies: Cookies, account_json: Json<Account>, conn: DbConn, s
     put_session(&user, &settings.days_cookie, &mut cookies);
     Ok(Json(user))
 }
+*/
 
 #[delete("/")]
-pub fn delete(mut cookies: Cookies, user: User) -> Redirect {
+pub fn delete(mut cookies: Cookies, user: User) -> Status {
     cookies.remove_private(Cookie::named("user_id"));
-    Redirect::to("/")
+    Status::Ok
 }
 
 #[delete("/", rank = 2)]
@@ -52,4 +52,9 @@ fn put_session(user: &User, expires: &i64, cookies: &mut Cookies) {
     cookie.set_expires(time::at(time));
 
     cookies.add_private(cookie);
+}
+
+#[options("/")]
+pub fn preflight() -> Status {
+    Status::Ok
 }

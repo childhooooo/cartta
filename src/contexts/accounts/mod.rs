@@ -2,6 +2,7 @@ pub mod user;
 pub mod credential;
 pub mod error;
 
+use regex::Regex;
 use bcrypt::*;
 use diesel::PgConnection;
 use diesel::{self, prelude::*};
@@ -12,9 +13,13 @@ use crate::schema::{users, credentials};
 use self::user::User;
 use self::error::AccountError;
 
+lazy_static! {
+    static ref USERNAME: Regex = Regex::new(r"^[0-9a-z-]{1,20}$").unwrap();
+}
+
 #[derive(Deserialize, Validate)]
 pub struct Account {
-    #[validate(length(min = "1", max = "20"))]
+    #[validate(regex = "USERNAME", length(max = "20"))]
     pub name: String,
     #[validate(email)]
     pub email: String,
@@ -29,7 +34,7 @@ pub fn create_user(
     account.validate()?;
     let user =
         diesel::insert_into(users::table)
-        .values(users::name.eq(&account.name))
+        .values(users::name.eq(&account.name.to_lowercase()))
         .get_result::<User>(conn)
         .map_err(AccountError::DatabaseError)?;
 
@@ -47,7 +52,7 @@ pub fn create_user(
 }
 
 pub fn get_user(
-    user_id: i32,
+    user_id: &i32,
     conn: &PgConnection
 ) -> Result<User, AccountError> {
     let user =
@@ -61,12 +66,12 @@ pub fn get_user(
 }
 
 pub fn search_user_by_name(
-    name: String,
+    name: &String,
     conn: &PgConnection
 ) -> Result<User, AccountError> {
     let user =
         users::table
-        .filter(users::name.eq(&name))
+        .filter(users::name.eq(name))
         .first::<User>(conn)
         .optional()
         .map_err(AccountError::DatabaseError)?;

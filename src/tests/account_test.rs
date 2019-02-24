@@ -40,8 +40,7 @@ fn test_new_get_authenticate_delete() {
             .get("/")
             .cookie(login_cookie.clone())
             .dispatch();
-        assert_eq!(res.status(), Status::SeeOther);
-        assert_eq!(res.headers().get_one("Location"), Some("/editor"));
+        assert_eq!(res.status(), Status::Ok);
 
         // ユーザー削除
         let mut res =

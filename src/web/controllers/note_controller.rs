@@ -17,10 +17,9 @@ pub fn index() -> Status {
     Status::Unauthorized
 }
 
-#[get("/book/<name>?<query>&<tag>&<page>&<per_page>")]
-pub fn book(name: String, query: Option<String>, tag: Option<String>, page: Option<i64>, per_page: Option<i64>, conn: DbConn) -> Result<Json<Vec<ListNoteWithTag>>, Status> {
-    let user = search_user_by_name(name, &conn)?;
-    let notes = list_some_notes(&user.id, query, tag, page, per_page, true, &conn).with_tag(&conn)?;
+#[get("/user/<id>?<query>&<tag>&<page>&<per_page>")]
+pub fn book(id: i32, query: Option<String>, tag: Option<String>, page: Option<i64>, per_page: Option<i64>, conn: DbConn) -> Result<Json<Vec<ListNoteWithTag>>, Status> {
+    let notes = list_some_notes(&id, query, tag, page, per_page, true, &conn).with_tag(&conn)?;
     Ok(Json(notes))
 }
 
@@ -73,4 +72,37 @@ pub fn chmod_by(id: i32, mode: i32, user: User, conn: DbConn) -> Result<Json<Not
 #[put("/<id>/access?<mode>", rank = 2)]
 pub fn chmod(id: i32, mode: i32) -> Status {
     Status::Unauthorized
+}
+
+#[delete("/<id>")]
+pub fn delete_by(id: i32, user: User, conn: DbConn) -> Status {
+    match delete_note(id, &conn) {
+        Ok(_) => Status::Ok,
+        Err(err) => Status::from(err)
+    }
+}
+
+#[delete("/<id>", rank = 2)]
+pub fn delete(id: i32) -> Status {
+    Status::Unauthorized
+}
+
+#[options("/")]
+pub fn preflight() -> Status {
+    Status::Ok
+}
+
+#[options("/<id>")]
+pub fn preflight_id(id: i32) -> Status {
+    Status::Ok
+}
+
+#[options("/user/<id>")]
+pub fn preflight_book(id: i32) -> Status {
+    Status::Ok
+}
+
+#[options("/<id>/access", rank = 2)]
+pub fn preflight_access(id: i32) -> Status {
+    Status::Ok
 }

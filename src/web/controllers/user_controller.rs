@@ -12,7 +12,13 @@ pub fn create(account_json: Json<Account>, conn: DbConn) -> Result<Json<User>, S
 
 #[get("/<id>")]
 pub fn get(id: i32, conn: DbConn) -> Result<Json<User>, Status> {
-    let user = get_user(id, &conn)?;
+    let user = get_user(&id, &conn)?;
+    Ok(Json(user))
+}
+
+#[get("/name/<name>")]
+pub fn search(name: String, conn: DbConn) -> Result<Json<User>, Status> {
+    let user = search_user_by_name(&name, &conn)?;
     Ok(Json(user))
 }
 
@@ -22,4 +28,9 @@ pub fn delete(id: i32, conn: DbConn) -> Status {
         Ok(_) => Status::Ok,
         Err(err) => Status::from(err)
     }
+}
+
+#[options("/")]
+pub fn preflight() -> Status {
+    Status::Ok
 }

@@ -12,7 +12,7 @@ fn test_cms() {
         let note_new = r#"{ "title": "test", "content": "test", "tag_ids": [1, 2, 3] }"#;
         let mut res =
             client
-            .post("/note")
+            .post("/api/note")
             .header(ContentType::JSON)
             .body(&note_new)
             .dispatch();
@@ -20,20 +20,20 @@ fn test_cms() {
 
         res =
             client
-            .put("/note/1")
+            .put("/api/note/1")
             .dispatch();
         assert_eq!(res.status(), Status::Unauthorized);
 
         res =
             client
-            .get("/tag")
+            .get("/api/tag")
             .dispatch();
         assert_eq!(res.status(), Status::Unauthorized);
 
         let tag_new = r#"{ "name": "test" }"#;
         res =
             client
-            .post("/tag")
+            .post("/api/tag")
             .header(ContentType::JSON)
             .body(&tag_new)
             .dispatch();
@@ -49,7 +49,7 @@ fn test_cms_by() {
         // ユーザー登録
         let mut res =
             client
-            .post("/user")
+            .post("/api/user")
             .header(ContentType::JSON)
             .body(&account)
             .dispatch();
@@ -63,17 +63,16 @@ fn test_cms_by() {
         let login_cookie = login(&client, &account).expect("logged in");
         let mut res =
             client
-            .get("/")
+            .get("/api/")
             .cookie(login_cookie.clone())
             .dispatch();
-        assert_eq!(res.status(), Status::SeeOther);
-        assert_eq!(res.headers().get_one("Location"), Some("/editor"));
+        assert_eq!(res.status(), Status::Ok);
 
         // タグ作成
         let mut tag_new = r#"{ "name": "tag1" }"#;
         res =
             client
-            .post("/tag")
+            .post("/api/tag")
             .header(ContentType::JSON)
             .body(&tag_new)
             .cookie(login_cookie.clone())
@@ -86,7 +85,7 @@ fn test_cms_by() {
         tag_new = r#"{ "name": "tag2" }"#;
         res =
             client
-            .post("/tag")
+            .post("/api/tag")
             .header(ContentType::JSON)
             .body(&tag_new)
             .cookie(login_cookie.clone())
@@ -99,7 +98,7 @@ fn test_cms_by() {
         // タグ一覧
         res =
             client
-            .get("/tag")
+            .get("/api/tag")
             .cookie(login_cookie.clone())
             .dispatch();
         assert_eq!(res.status(), Status::Ok);
@@ -118,7 +117,7 @@ fn test_cms_by() {
         };
         res =
             client
-            .post("/note")
+            .post("/api/note")
             .header(ContentType::JSON)
             .body(&serde_json::to_string(&note_new).unwrap())
             .cookie(login_cookie.clone())
@@ -134,7 +133,7 @@ fn test_cms_by() {
         // ノート取得
         res =
             client
-            .get(format!("/note/{}", &note["id"]))
+            .get(format!("/api/note/{}", &note["id"]))
             .header(ContentType::JSON)
             .cookie(login_cookie.clone())
             .dispatch();
@@ -155,7 +154,7 @@ fn test_cms_by() {
         };
         res =
             client
-            .put(format!("/note/{}", &note["note"]["id"]))
+            .put(format!("/api/note/{}", &note["note"]["id"]))
             .header(ContentType::JSON)
             .body(&serde_json::to_string(&note_new).unwrap())
             .cookie(login_cookie.clone())
@@ -171,7 +170,7 @@ fn test_cms_by() {
         // ノートをPublicに変更
         res =
             client
-            .put(format!("/note/{}/access?mode=2", &note["id"]))
+            .put(format!("/api/note/{}/access?mode=2", &note["id"]))
             .cookie(login_cookie.clone())
             .dispatch();
         assert_eq!(res.status(), Status::Ok);
@@ -183,7 +182,7 @@ fn test_cms_by() {
         // ノート一覧
         res =
             client
-            .get(format!("/note/book/{}?page=1&per_page=30", username))
+            .get(format!("/api/note/user/{}?page=1&per_page=30", &user["id"]))
             .cookie(login_cookie.clone())
             .dispatch();
         assert_eq!(res.status(), Status::Ok);
@@ -195,7 +194,7 @@ fn test_cms_by() {
         // ノート一覧
         res =
             client
-            .get(format!("/note?page=1&per_page=30"))
+            .get(format!("/api/note?page=1&per_page=30"))
             .cookie(login_cookie.clone())
             .dispatch();
         assert_eq!(res.status(), Status::Ok);
@@ -207,7 +206,7 @@ fn test_cms_by() {
         // 文字列で検索
         res =
             client
-            .get(format!("/note/book/{}?query=edi&page=1&per_page=30", username))
+            .get(format!("/api/note/user/{}?query=edi&page=1&per_page=30", &user["id"]))
             .cookie(login_cookie.clone())
             .dispatch();
         assert_eq!(res.status(), Status::Ok);
@@ -218,7 +217,7 @@ fn test_cms_by() {
         // タグで検索
         res =
             client
-            .get(format!("/note/book/{}?tag={},{}&page=1&per_page=30", username, &tag1["id"], &tag2["id"]))
+            .get(format!("/api/note/user/{}?tag={},{}&page=1&per_page=30", &user["id"], &tag1["id"], &tag2["id"]))
             .cookie(login_cookie.clone())
             .dispatch();
         assert_eq!(res.status(), Status::Ok);
@@ -229,7 +228,7 @@ fn test_cms_by() {
         // 両方で検索
         res =
             client
-            .get(format!("/note/book/{}?query=edit&tag={},{}&page=1&per_page=30", username, &tag1["id"], &tag2["id"]))
+            .get(format!("/api/note/user/{}?query=edit&tag={},{}&page=1&per_page=30", &user["id"], &tag1["id"], &tag2["id"]))
             .cookie(login_cookie.clone())
             .dispatch();
         assert_eq!(res.status(), Status::Ok);

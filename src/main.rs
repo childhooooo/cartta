@@ -8,12 +8,18 @@
 #[macro_use] extern crate log;
 #[macro_use] extern crate serde_derive;
 #[macro_use] extern crate validator_derive;
+#[macro_use] extern crate tera;
+#[macro_use] extern crate lazy_static;
+extern crate regex;
 extern crate validator;
 extern crate bcrypt;
 extern crate chrono;
 extern crate parking_lot;
 extern crate time;
 extern crate ammonia;
+extern crate pulldown_cmark;
+extern crate htmlescape;
+extern crate xss;
 
 #[macro_use] mod helpers;
 mod schema;
@@ -25,6 +31,5 @@ mod web;
 use self::web::app;
 
 fn main() {
-    //compile_error!("editing");
     app::rocket().0.launch();
 }

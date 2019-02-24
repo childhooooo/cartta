@@ -20,7 +20,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
             .get_private("user_id")
             .and_then(|cookie| cookie.value().parse().ok());
         let user = match user_id {
-            Some(user_id) => get_user(user_id, &conn).ok(),
+            Some(user_id) => get_user(&user_id, &conn).ok(),
             None => None
         };
         user.or_forward(())

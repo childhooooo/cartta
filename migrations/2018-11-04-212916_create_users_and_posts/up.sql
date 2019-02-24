@@ -5,7 +5,7 @@ CREATE TABLE users (
 
 CREATE TABLE credentials (
     id SERIAL PRIMARY KEY,
-    email VARCHAR NOT NULL,
+    email VARCHAR NOT NULL UNIQUE,
     password VARCHAR NOT NULL,
     user_id INTEGER NOT NULL REFERENCES users ON DELETE CASCADE
 );
@@ -24,7 +24,7 @@ SELECT diesel_manage_updated_at('notes');
 
 CREATE TABLE tags (
     id SERIAL PRIMARY KEY,
-    name VARCHAR NOT NULL UNIQUE,
+    name VARCHAR NOT NULL,
     user_id INTEGER REFERENCES users ON DELETE SET NULL
 );
 

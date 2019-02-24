@@ -1,0 +1,188 @@
+@import url("https://fonts.googleapis.com/css?family=Material+Icons")
+@import url("https://fonts.googleapis.com/css?family=Josefin+Slab:700")
+@import url("https://fonts.googleapis.com/css?family=Ubuntu+Mono")
+
+@font-face
+  font-family: YuGothicM
+  src: local("Yu Gothic Medium")
+
+body, h1, h2, h3, h4, p, a, li, span
+  font-size: 16px
+  font-family: "游ゴシック Medium",YuGothic,YuGothicM,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif,'M PLUS 1p'
+  font-weight: 400
+  color: #222222
+
+.js
+  font-family: 'Josefin Slab','M PLUS 1p'
+  font-weight: 700
+
+.bold
+  font-weight: 500
+
+.editor, .viewer, .single
+  word-wrap: break-word
+  overflow-x: hidden
+
+.viewer
+  p, li, a
+    font-size: 1em
+    line-height: 1.8em
+
+  p, ul, a
+    margin: .4em .4em
+
+  p, a
+    margin-left: 0
+
+  blockquote
+    margin: .8em 0
+
+  a
+    color: #555555
+
+  h1, h2, h3, h4
+    font-weight: 600
+
+  h1
+    margin: 1em 0 .4em 0
+    font-size: 2.1em
+
+  h1:first-child
+    margin-top: .4em
+
+  h2
+    margin: 1.1em 0 .4em 0
+    border-bottom: 2px solid #dddddd
+    font-size: 1.7em
+
+  h3
+    margin: 1.1em 0 .4em 0
+    font-size: 1.4em
+
+  h4
+    margin: 1.1em 0 .4em 0
+    padding-left: 8px
+    font-size: 1em
+    border-left: 10px solid #222222
+
+  code
+    margin: .8em 0
+    font-family: 'Ubuntu Mono' !important
+    box-shadow: none
+
+  code:before, code:after
+    content: ""
+
+.v-chip i.v-icon--left
+  margin-right: 6px
+
+.v-chip .v-chip__content
+  font-weight: 600
+  color: #ffffff
+
+.loading
+  position: absolute
+  z-index: 100
+  top: 0
+  left: 0
+  height: 100vh
+  width: 100vw
+  background-color: #ffffff
+  padding: 45vh 0
+  transition: 1s
+
+.loading.loaded
+  transform: translateX(100%)
+
+.title-global
+  margin: 30px auto
+  display: block
+  font-weight: 700
+  font-size: 80px
+  color: #000000
+  text-align: center
+  text-decoration: none
+  cursor: pointer
+
+.notfound
+  height: 100vh
+  width: 100vw
+  display: flex
+  align-items: center
+  justify-content: center
+
+  a
+    margin: 30px 0
+
+  h1
+    margin: 0
+    font-size: 36px
+    font-weight: 900
+    text-align: center
+
+  p
+    margin: 15px 0
+    text-align: center
+
+//
+
+blockquote
+  position: relative
+  padding: 35px 15px 10px 15px
+  box-sizing: border-box
+  font-style: italic
+  background: #f5f5f5
+  color: #777777
+  border-radius: 3px
+
+blockquote:before
+  display: inline-block
+  position: absolute
+  top: 10px
+  left: 15px
+  vertical-align: middle
+  content: "\e244"
+  font-family: "Material Icons"
+  color: #555555
+  font-size: 28px
+  line-height: 1
+  font-weight: 900
+
+blockquote p
+  padding: 0
+  margin: 7px 0
+  line-height: 1.7
+
+blockquote cite
+  display: block
+  text-align: right
+  color: #888888
+  font-size: 0.9em
+
+hr
+  height: 0
+  margin: 0
+  padding: 0
+  border: 0
+  border-top: 1px solid #bbbbbb
+
+//
+
+.pace
+  position: fixed
+  width: 100vw
+  height: 100vh
+  z-index: 100
+  background-color: #222222
+  color: white
+  transition: 1s
+
+.pace-inactive
+  transform: translateY(-100%)
+  opacity: .5
+
+.pace .pace-progress:after
+  color: white
+  font-family: 'Josefin Slab','M PLUS 1p'
+  font-weight: 700
+  font-size: 25vw

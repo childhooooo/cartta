@@ -1,0 +1,42 @@
+{% extends "base" %} 
+
+{% block content %}
+
+  <link rel="stylesheet" href="/static/css/single.css">
+  <title>{{ title }} | {{ user_name | capitalize }}'s | Cartta</title>
+  {{ content | escape | description | safe }}
+</head>
+<body cz-shortcut-listen="true">
+  <div id="loader"></div>
+  <div id="uid" hidden>{{ user_id }}</div>
+  <div data-app="true" class="application theme--light" id="app">
+    <div class="application--wrap">
+      <div class="container">
+        <div class="titlearea">
+          {{ user_name | maintitle }}
+        </div>
+        <main class="single">
+          <div class="status">
+            <div class="chips">
+              {% for tag in tags %}
+                <span tabindex="-1" class="v-chip chip jp bold v-chip--disabled v-chip--label v-chip--small theme--light grey darken-2 white--text">
+                  <span class="v-chip__content">
+                    <i aria-hidden="true" class="v-icon v-icon--left material-icons theme--light white--text">label</i>{{ tag.name }}
+                  </span>
+                </span>
+              {% endfor %}
+            </div>
+            <p class="date">updated: {{ updated_at | date(format="%Y.%m.%d") }}</p>
+          </div>
+          <div class="viewer">
+            {{ content | decode | markdown | sanitize | safe }}
+          </div>
+        </main>
+        <div id="single"></div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript" src="/static/js/single.js"></script>
+</body>
+
+  {% endblock content %}

@@ -1,0 +1,20 @@
+{% extends "base" %} 
+
+{% block content %}
+
+  <meta name="robots" content="noindex">
+  <meta name="description" content="ワンクリックでリンク共有＆ブログ公開。シンプルなMarkdownエディター。">
+  <link rel="stylesheet" href="/static/css/single.css">
+  <title>404 Not Found | Cartta</title>
+</head>
+<body>
+    <main class="notfound">
+        <div class="titlearea">
+            <a href="/" class="title-global js">Cartta</a>
+            <h1 class="js">404 Not Found</h1>
+            <p>ページが見つかりませんでした</p>
+        </div>
+    </main>
+</body>
+
+{% endblock content %}

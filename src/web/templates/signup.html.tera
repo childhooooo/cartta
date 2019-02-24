@@ -1,0 +1,15 @@
+{% extends "base" %} 
+
+{% block content %}
+
+  <meta name="robots" content="noindex">
+  <meta name="description" content="ワンクリックでリンク共有＆ブログ公開。シンプルなMarkdownエディター。">
+  <link rel="stylesheet" href="/static/css/signup.css">
+  <title>Signup | Cartta</title>
+</head>
+<body cz-shortcut-listen="true">
+  <div id="signup"></div>
+  <script type="text/javascript" src="/static/js/signup.js"></script>
+</body>
+
+{% endblock content %}
