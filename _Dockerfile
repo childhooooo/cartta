@@ -7,9 +7,6 @@ RUN rustup override set nightly && \
     cargo install diesel_cli --no-default-features --features postgres && \
     cargo install cargo-watch
 
-COPY . /app
+#COPY . /app
 
-ENV ROCKET_DATABASES="{postgres_database={url=\"${DATABASE_URL}\"}}"
-ENV ROCKET_PORT=${PORT}
-
-CMD bash -c "diesel setup && ROCKET_ENV=production cargo run --release"
+#CMD bash -c "export ROCKET_DATABASES={postgres_database={url=\"${DATABASE_URL}\"}} && diesel setup && ROCKET_PORT=$PORT ROCKET_ENV=production cargo run"

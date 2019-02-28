@@ -1,4 +1,6 @@
 /target/
 /db/
+/.env
+/prod.config.js
 
 **/*.rs.bk

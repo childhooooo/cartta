@@ -23,14 +23,14 @@ module.exports = {
             chunkFilename:''
           }])
     }
+    if (process.env.NODE_ENV == 'production') {
+      config.resolve.alias.set('config', path.resolve('./prod.config.js'))
+    } else {
+      config.resolve.alias.set('config', path.resolve('./dev.config.js'))
+    }
   },
 
-  configureWebpack: {
-    resolve: {
-      alias: {
-        config: path.resolve('./config.js'),
-      }
-    }
+  configureWebpack: config => {
   },
 
 }
