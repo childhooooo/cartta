@@ -7,12 +7,7 @@ services:
             - .:/app
         ports:
             - "53000:8000"
-        #command: bash -c "bash ./wait_for_db.sh db:5432 && diesel setup && cargo watch -x test"
-        #command: bash -c "bash ./wait_for_db.sh db:5432 && diesel setup && cargo watch -x run"
-        command: bash -c "bash ./wait_for_db.sh db:5432 && diesel setup && cargo run"
-        environment:
-            DATABASE_URL: postgres://username:password@db/db
-            PORT: 8000
+        command: bash -c "bash ./wait_for_db.sh db:5432 && diesel setup && cargo watch -x run"
         depends_on:
             - db
 

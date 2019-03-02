@@ -4,7 +4,3 @@ WORKDIR /app
 
 RUN cargo install diesel_cli --no-default-features --features postgres && \
     cargo install cargo-watch
-
-COPY . /app
-
-CMD ["./startup.sh"]
