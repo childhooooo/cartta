@@ -214,7 +214,7 @@ export default {
 <style lang="stylus" scoped>
 #app
   height: 100vh
-  overflow: hidden
+  overflow: scroll
 
 .title-toolbar
   font-size: 32px
