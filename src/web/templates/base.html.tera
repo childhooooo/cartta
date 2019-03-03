@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <script src="/static/lib/pace/js/pace.js"></script>
+  <script src="/static/lib/pace/pace.js"></script>
   <script>Pace.options.ajax.trackMethods = ['GET', 'POST'];</script>
-  <link rel="stylesheet" href="/static/lib/pace/css/pace.css">
+  <link rel="stylesheet" href="/static/lib/pace/pace.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">

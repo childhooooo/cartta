@@ -4,13 +4,13 @@
 
   <meta name="robots" content="noindex">
   <meta name="description" content="ワンクリックでリンク共有＆ブログ公開。シンプルなMarkdownエディター。">
-  <link rel="stylesheet" href="/static/css/editor.css">
+  <link rel="stylesheet" href="/static/component/css/editor.css">
   <title>Cartta</title>
 </head>
 <body cz-shortcut-listen="true">
   <div id="uid" hidden>{{ user_id }}</div>
   <div id="editor"></div>
-  <script type="text/javascript" src="/static/js/editor.js"></script>
+  <script type="text/javascript" src="/static/component/js/editor.js"></script>
 </body>
 
 {% endblock content %}

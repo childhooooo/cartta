@@ -11,7 +11,7 @@ module.exports = {
     error: 'src/error/main.js'
   },
 
-  outputDir: '../static/',
+  outputDir: '../static/component/',
 
   chainWebpack: config => {
     const types = ['vue-modules', 'vue', 'normal-modules', 'normal']

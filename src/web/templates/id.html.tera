@@ -2,7 +2,7 @@
 
 {% block content %}
 
-  <link rel="stylesheet" href="/static/css/single.css">
+  <link rel="stylesheet" href="/static/component/css/single.css">
   <title>{{ title }} | {{ user_name | capitalize }}'s | Cartta</title>
   {{ content | escape | description | safe }}
 </head>
@@ -36,7 +36,7 @@
       </div>
     </div>
   </div>
-  <script type="text/javascript" src="/static/js/single.js"></script>
+  <script type="text/javascript" src="/static/component/js/single.js"></script>
 </body>
 
   {% endblock content %}
