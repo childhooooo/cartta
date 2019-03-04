@@ -169,20 +169,20 @@ export default {
 
   a
     color: #555555
-    font-size: 1em;
+    font-size: 1.4rem;
 
   p, li, blockquote
-    font-size: 1.2em
+    font-size: 1.4rem
 
-  code, span
-    font-size: 1.1em
+  .viewer code, .viewer span
+    font-size: 1.3rem
     font-weight: 400
 
   blockquote p
-    font-size: 1em
+    font-size: 1.4rem
 
   ul li ul li
-    font-size: 1em
+    font-size: 1.3rem
 
   p, ul, a
     margin: .8em .4em 1em .4em
