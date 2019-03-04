@@ -170,8 +170,11 @@ export default {
   a
     color: #555555
 
-  p, a, code, li, blockquote
+  p, a, li, blockquote
     font-size: 1.2em
+
+  code, span
+    font-size: 1.1em
 
   blockquote p
     font-size: 1em
