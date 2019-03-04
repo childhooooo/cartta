@@ -174,8 +174,8 @@ export default {
             this.input = this.note.content
             this.tags_note = this.note.tags
             let renderer = new marked.Renderer()
-            renderer.code = function(code) {
-                return '<pre><code class="hljs">' + hljs.highlightAuto(code).value + '</code></pre>'
+            renderer.code = function(code, lang) {
+                return '<pre><code class="hljs ' + lang +  '">' + hljs.highlightAuto(code).value + '</code></pre>'
             }
             marked.setOptions({
                 headerIds: false,
