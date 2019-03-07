@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  {{ id_ga() | safe }}
   <script src="/static/lib/pace/pace.js"></script>
   <script>Pace.options.ajax.trackMethods = ['GET', 'POST'];</script>
   <link rel="stylesheet" href="/static/lib/pace/pace.css">

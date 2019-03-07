@@ -3,6 +3,7 @@ use rocket_contrib::templates::Template;
 use rocket_contrib::serve::StaticFiles;
 use diesel::PgConnection;
 use super::controllers::*;
+use super::views::*;
 use super::views::note_view::*;
 use super::fairings::cors::CORS;
 
@@ -47,6 +48,7 @@ pub fn rocket() -> (rocket::Rocket, Option<DbConn>) {
             engines.tera.register_filter("sanitize", filter_sanitize);
             engines.tera.register_filter("maintitle", filter_title);
             engines.tera.register_filter("capitalize", filter_capitalize);
+            engines.tera.register_function("id_ga", id_ga());
         }))
         .attach(CORS());
 
