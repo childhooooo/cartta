@@ -258,19 +258,19 @@ export default {
     font-size: 10px
 
     a
-      font-size: 1.2rem;
+      font-size: 1rem;
 
     p, li, blockquote
-      font-size: 1.2rem
+      font-size: 1rem
 
     .viewer code, .viewer span
-      font-size: 1rem
+      font-size: .9rem
 
     blockquote p
-      font-size: 1.2rem
+      font-size: 1rem
 
     ul li ul li
-      font-size: 1rem
+      font-size: .9rem
  
 h1, p
   text-align: left
