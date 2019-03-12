@@ -7,8 +7,8 @@ services:
             - .:/app
         ports:
             - "53000:8000"
-        #command: bash -c "bash ./wait_for_db.sh db:5432 && diesel setup && cargo watch -x run"
-        command: bash -c "bash ./wait_for_db.sh db:5432 && diesel setup && cargo run"
+        command: bash -c "bash ./wait_for_db.sh db:5432 && diesel setup && cargo watch -w ./src -x run"
+        #command: bash -c "bash ./wait_for_db.sh db:5432 && diesel setup && cargo run"
         depends_on:
             - db
         environment:

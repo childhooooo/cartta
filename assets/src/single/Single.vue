@@ -253,6 +253,24 @@ export default {
 
   .chips
     text-align: left
+
+  .single
+    font-size: 10px
+
+    a
+      font-size: 1.2rem;
+
+    p, li, blockquote
+      font-size: 1.2rem
+
+    .viewer code, .viewer span
+      font-size: 1rem
+
+    blockquote p
+      font-size: 1.2rem
+
+    ul li ul li
+      font-size: 1rem
  
 h1, p
   text-align: left
