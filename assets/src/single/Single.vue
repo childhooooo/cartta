@@ -218,6 +218,9 @@ export default {
   cursor: pointer
   font-size: 14px
 
+.v-list__tile__content
+  color: #222
+
 .v-list__tile__content .caption
   font-size: 16px !important
 
